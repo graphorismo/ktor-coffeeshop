@@ -1,5 +1,6 @@
 package ru.graphorismo.routing
 
+import io.ktor.http.cio.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -12,6 +13,9 @@ fun Routing.putLogin(){
         var credentials : Credentials = call.receive()
         if (credentials.login == "login"){
             call.respond(AuthResponse("ok","12345"))
+        }
+        else{
+            call.respond(AuthResponse("deny",""))
         }
     }
 }
