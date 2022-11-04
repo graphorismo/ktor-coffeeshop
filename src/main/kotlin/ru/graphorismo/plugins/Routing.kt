@@ -6,6 +6,7 @@ import io.ktor.server.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.request.*
+import ru.graphorismo.routing.getProducts
 import ru.graphorismo.routing.putLogin
 import ru.graphorismo.routing.putRegistration
 
@@ -18,6 +19,7 @@ fun Application.configureRouting() {
         }
         putLogin()
         putRegistration()
+        getProducts()
         // Static plugin. Try to access `/static/index.html`
         static("/static") {
             resources("static")
