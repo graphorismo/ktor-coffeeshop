@@ -6,6 +6,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import ru.graphorismo.coffeeshop.data.auth.RegistrateResponse
+import ru.graphorismo.data.authentication.AuthController
 import ru.graphorismo.data.authentication.AuthResponse
 import ru.graphorismo.data.authentication.Credentials
 import ru.graphorismo.data.products.Product
@@ -27,35 +28,23 @@ fun Routing.getProducts(){
 
 fun Routing.putLogin(){
 
-    var authenticationRepository = AuthenticationRepository.getInstance()
+    var authController = AuthController.getInstance()
 
     post("/login"){
         var receivedCredentials : Credentials = call.receive()
-        var rightCredentials = authenticationRepository.getCredentialsForLogin(receivedCredentials.login)
-        if (rightCredentials == null || rightCredentials.password != receivedCredentials.password){
-            call.respond(AuthResponse("deny",""))
-        }
-        else
-        {
-            call.respond(AuthResponse("ok","12345"))
-        }
+        var response = authController.authenticate(receivedCredentials)
+        call.respond(response)
     }
 }
 
 fun Routing.putRegistration(){
 
-    var authenticationRepository = AuthenticationRepository.getInstance()
+    var authController = AuthController.getInstance()
 
     post("/registrate"){
         var receivedCredentials : Credentials = call.receive()
-        var registrationResult = authenticationRepository.putCredentialsForRegistration(receivedCredentials)
-        if (registrationResult == false){
-            call.respond(RegistrateResponse("deny"))
-        }
-        else
-        {
-            call.respond(RegistrateResponse("ok"))
-        }
+        var response = authController.registrate(receivedCredentials)
+        call.respond(response)
     }
 }
 
