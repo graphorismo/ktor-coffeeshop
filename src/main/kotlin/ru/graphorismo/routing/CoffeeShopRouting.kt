@@ -15,12 +15,19 @@ import ru.graphorismo.data.repositories.ProductsRepository
 
 fun Routing.getProducts(){
     var productsRepository = ProductsRepository.getInstance()
+    var authController = AuthController.getInstance()
 
     get("/products") {
         var products = listOf<Product>()
-        if(call.request.queryParameters["type"] != null){
+        if(call.request.queryParameters["token"] != null)
+        {
+            var token = call.request.queryParameters["token"]
+            if(authController.checkTocken(token!!) == true
+                && call.request.queryParameters["type"] != null){
             var productsType = call.request.queryParameters["type"]!!
             products = productsRepository.getProductsOfType(productsType)
+        }
+
         }
         call.respond(products)
     }
