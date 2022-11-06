@@ -1,9 +1,8 @@
 package ru.graphorismo.data.authentication
 
-import io.ktor.server.application.*
-import io.ktor.server.response.*
-import ru.graphorismo.coffeeshop.data.auth.RegistrateResponse
+import ru.graphorismo.data.responses.RegistrateResponse
 import ru.graphorismo.data.repositories.AuthenticationRepository
+import ru.graphorismo.data.responses.AuthResponse
 import kotlin.random.Random
 
 class AuthController {
@@ -30,7 +29,7 @@ class AuthController {
         return token.toString()
     }
 
-    fun authenticate(credentials: Credentials) : AuthResponse{
+    fun authenticate(credentials: Credentials) : AuthResponse {
         var rightCredentials = authenticationRepository.getCredentialsForLogin(credentials.login)
         if ( rightCredentials != null
             && credentials.login == rightCredentials.login
@@ -43,7 +42,7 @@ class AuthController {
         }
     }
 
-    fun registrate(credentials: Credentials) : RegistrateResponse{
+    fun registrate(credentials: Credentials) : RegistrateResponse {
         var registrationResult = authenticationRepository.putCredentialsForRegistration(credentials)
         if (registrationResult == false){
             return RegistrateResponse("deny")

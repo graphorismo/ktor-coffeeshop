@@ -1,4 +1,4 @@
-package ru.graphorismo.coffeeshop.data.auth
+package ru.graphorismo.data.responses
 
 data class RegistrateResponse(var status: String) {
 }
