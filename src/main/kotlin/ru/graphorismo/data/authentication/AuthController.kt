@@ -20,7 +20,7 @@ class AuthController {
 
 
     private var authenticationRepository = AuthenticationRepository.getInstance()
-    private var tokens : MutableList<String> = mutableListOf()
+    private var tokensToLogins : MutableMap<String, String> = mutableMapOf()
 
     private fun generateToken(): String{
         var a = Random(123456789).nextInt()
@@ -35,7 +35,7 @@ class AuthController {
             && credentials.login == rightCredentials.login
             && credentials.password == rightCredentials.password){
             var token = generateToken()
-            tokens.add(token)
+            tokensToLogins.put(token, credentials.login)
             return AuthResponse("ok", token)
         }else{
             return AuthResponse("deny","")
@@ -52,8 +52,7 @@ class AuthController {
             return RegistrateResponse("ok")
         }
     }
-
-    fun checkTocken(token: String): Boolean{
-        return tokens.contains(token)
+    fun getLoginForToken(token: String): String?{
+        return tokensToLogins[token]
     }
 }

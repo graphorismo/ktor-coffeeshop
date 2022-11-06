@@ -7,27 +7,36 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import ru.graphorismo.data.authentication.AuthController
 import ru.graphorismo.data.authentication.Credentials
+import ru.graphorismo.data.database.products.ProductsDataBase
 import ru.graphorismo.data.products.Order
 import ru.graphorismo.data.products.Product
 import ru.graphorismo.data.repositories.ProductsRepository
+import ru.graphorismo.data.responses.CartResponse
 
-fun Routing.putOrder(){
+
+fun Routing.getCart(){
+
+}
+
+fun Routing.putCart(){
 
     var authController = AuthController.getInstance()
+    var productsDataBase = ProductsDataBase.getInstance()
 
     post("/cart"){
         var receivedOrder : Order = call.receive()
-        var response =
-        if(call.request.queryParameters["token"] != null)
-        {
+        var response = CartResponse("net_error")
+        if(call.request.queryParameters["token"] != null) {
             var token = call.request.queryParameters["token"]
-            if(authController.checkTocken(token!!) == true){
-                var productsType = call.request.queryParameters["type"]!!
-                products = productsRepository.getProductsOfType(productsType)
+            var login = authController.getLoginForToken(token!!)
+            if (login != null) {
+                productsDataBase.putOrderToTheCartForLogin(receivedOrder, login)
             }
-        call.respond(response)
+            call.respond(response)
+        }
     }
 }
+
 fun Routing.getProducts(){
     var productsRepository = ProductsRepository.getInstance()
     var authController = AuthController.getInstance()
@@ -37,7 +46,8 @@ fun Routing.getProducts(){
         if(call.request.queryParameters["token"] != null)
         {
             var token = call.request.queryParameters["token"]
-            if(authController.checkTocken(token!!) == true
+            var login = authController.getLoginForToken(token!!)
+            if( login != null
                 && call.request.queryParameters["type"] != null){
             var productsType = call.request.queryParameters["type"]!!
             products = productsRepository.getProductsOfType(productsType)

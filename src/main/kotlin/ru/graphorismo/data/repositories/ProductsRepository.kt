@@ -5,7 +5,7 @@ import ru.graphorismo.data.products.Product
 
 class ProductsRepository {
 
-    var productsDataBase = ProductsDataBase()
+    var productsDataBase = ProductsDataBase.getInstance()
 
     fun getProductsOfType(type: String): List<Product>{
         return productsDataBase.getProductsOfType(type)
