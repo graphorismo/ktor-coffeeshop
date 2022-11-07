@@ -107,5 +107,13 @@ class ProductsDataBase private constructor(){
         return response
     }
 
+    fun clearCartForLogin(login: String): CartResponse {
+        var response = CartResponse("ok")
+        transaction(dataBase) {
+            CartsData.deleteWhere {(CartsData.user eq login)}
+        }
+        return response
+    }
+
 
 }

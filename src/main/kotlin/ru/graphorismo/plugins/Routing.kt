@@ -21,6 +21,7 @@ fun Application.configureRouting() {
         putCartAdd()
         getCart()
         putCartRemove()
+        putCartClear()
         // Static plugin. Try to access `/static/index.html`
         static("/static") {
             resources("static")

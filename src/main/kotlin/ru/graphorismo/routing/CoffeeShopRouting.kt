@@ -12,6 +12,22 @@ import ru.graphorismo.data.products.Order
 import ru.graphorismo.data.products.Product
 import ru.graphorismo.data.responses.CartResponse
 
+fun Routing.putCartClear(){
+    var authController = AuthController.getInstance()
+    var productsDataBase = ProductsDataBase.getInstance()
+
+    post("/cart/clear"){
+        var response = CartResponse("error")
+        if(call.request.queryParameters["token"] != null) {
+            var token = call.request.queryParameters["token"]
+            var login = authController.getLoginForToken(token!!)
+            if (login != null) {
+                response = productsDataBase.clearCartForLogin(login)
+            }
+        }
+        call.respond(response)
+    }
+}
 fun Routing.putCartRemove(){
 
     var authController = AuthController.getInstance()
