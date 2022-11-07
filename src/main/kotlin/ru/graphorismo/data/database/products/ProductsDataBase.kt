@@ -37,7 +37,7 @@ class ProductsDataBase private constructor(){
                 .map { toOrder(it) }
         }
         if(alreadyInsertedOrders.isEmpty()){
-            transaction {
+            transaction(dataBase) {
                 CartsData.insert {
                     it[CartsData.user] = login
                     it[CartsData.product] =  order.product.name
@@ -47,7 +47,7 @@ class ProductsDataBase private constructor(){
             }
             response = CartResponse("ok")
         }else{
-            transaction {
+            transaction(dataBase) {
                 CartsData.update({(CartsData.product eq order.product.name) and (CartsData.user eq login)}) {
                     it[CartsData.amount] = order.amount + alreadyInsertedOrders[0].amount
                 }
@@ -79,6 +79,32 @@ class ProductsDataBase private constructor(){
             query.map { ProductsData.toProduct(it) }
         }
         return products
+    }
+
+    fun removeOrderFromTheCartForLogin(order: Order, login: String): CartResponse {
+
+        var response = CartResponse("error")
+        var alreadyInsertedOrders = transaction(dataBase) {
+            CartsData
+                .select {(CartsData.product eq order.product.name) and (CartsData.user eq login) }
+                .map { toOrder(it) }
+        }
+        if(alreadyInsertedOrders.isEmpty() == false){
+            var newAmount = alreadyInsertedOrders[0].amount - order.amount
+            if(newAmount > 0){
+                transaction(dataBase) {
+                    CartsData.update({(CartsData.product eq order.product.name) and (CartsData.user eq login)}) {
+                        it[CartsData.amount] = newAmount
+                    }
+                }
+            }else{
+                transaction(dataBase) {
+                    CartsData.deleteWhere {(CartsData.product eq order.product.name) and (CartsData.user eq login)}
+                }
+            }
+            response = CartResponse("ok")
+        }
+        return response
     }
 
 

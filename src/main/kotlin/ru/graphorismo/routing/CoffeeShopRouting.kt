@@ -12,6 +12,24 @@ import ru.graphorismo.data.products.Order
 import ru.graphorismo.data.products.Product
 import ru.graphorismo.data.responses.CartResponse
 
+fun Routing.putCartRemove(){
+
+    var authController = AuthController.getInstance()
+    var productsDataBase = ProductsDataBase.getInstance()
+
+    post("/cart/remove"){
+        var receivedOrder : Order = call.receive()
+        var response = CartResponse("error")
+        if(call.request.queryParameters["token"] != null) {
+            var token = call.request.queryParameters["token"]
+            var login = authController.getLoginForToken(token!!)
+            if (login != null) {
+                response = productsDataBase.removeOrderFromTheCartForLogin(receivedOrder, login)
+            }
+        }
+        call.respond(response)
+    }
+}
 
 fun Routing.getCart(){
     var productsDataBase = ProductsDataBase.getInstance()
@@ -33,12 +51,12 @@ fun Routing.getCart(){
 
 }
 
-fun Routing.putCart(){
+fun Routing.putCartAdd(){
 
     var authController = AuthController.getInstance()
     var productsDataBase = ProductsDataBase.getInstance()
 
-    post("/cart"){
+    post("/cart/add"){
         var receivedOrder : Order = call.receive()
         var response = CartResponse("net_error")
         if(call.request.queryParameters["token"] != null) {
