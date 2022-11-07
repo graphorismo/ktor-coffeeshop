@@ -10,11 +10,26 @@ import ru.graphorismo.data.authentication.Credentials
 import ru.graphorismo.data.database.products.ProductsDataBase
 import ru.graphorismo.data.products.Order
 import ru.graphorismo.data.products.Product
-import ru.graphorismo.data.repositories.ProductsRepository
 import ru.graphorismo.data.responses.CartResponse
 
 
 fun Routing.getCart(){
+    var productsDataBase = ProductsDataBase.getInstance()
+    var authController = AuthController.getInstance()
+
+    get("/cart") {
+        var orders = listOf<Order>()
+        if(call.request.queryParameters["token"] != null)
+        {
+            var token = call.request.queryParameters["token"]
+            var login = authController.getLoginForToken(token!!)
+            if( login != null){
+                orders = productsDataBase.getOrdersForLogin(login)
+            }
+
+        }
+        call.respond(orders)
+    }
 
 }
 
@@ -38,7 +53,7 @@ fun Routing.putCart(){
 }
 
 fun Routing.getProducts(){
-    var productsRepository = ProductsRepository.getInstance()
+    var productsDataBase = ProductsDataBase.getInstance()
     var authController = AuthController.getInstance()
 
     get("/products") {
@@ -48,10 +63,11 @@ fun Routing.getProducts(){
             var token = call.request.queryParameters["token"]
             var login = authController.getLoginForToken(token!!)
             if( login != null
-                && call.request.queryParameters["type"] != null){
-            var productsType = call.request.queryParameters["type"]!!
-            products = productsRepository.getProductsOfType(productsType)
-        }
+                && call.request.queryParameters["type"] != null)
+            {
+                var productsType = call.request.queryParameters["type"]!!
+                products = productsDataBase.getProductsOfType(productsType)
+            }
 
         }
         call.respond(products)
