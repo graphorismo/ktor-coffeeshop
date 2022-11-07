@@ -30,10 +30,10 @@ fun Routing.putCart(){
             var token = call.request.queryParameters["token"]
             var login = authController.getLoginForToken(token!!)
             if (login != null) {
-                productsDataBase.putOrderToTheCartForLogin(receivedOrder, login)
+                response = productsDataBase.putOrderToTheCartForLogin(receivedOrder, login)
             }
-            call.respond(response)
         }
+        call.respond(response)
     }
 }
 

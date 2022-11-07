@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import ru.graphorismo.data.products.Order
 import ru.graphorismo.data.products.Product
+import ru.graphorismo.data.responses.CartResponse
 
 class ProductsDataBase private constructor(){
 
@@ -27,8 +28,9 @@ class ProductsDataBase private constructor(){
         }
     }
 
-    fun putOrderToTheCartForLogin(order: Order, login: String){
+    fun putOrderToTheCartForLogin(order: Order, login: String): CartResponse{
 
+        var response = CartResponse("error")
         var alreadyInsertedOrders = transaction(dataBase) {
              CartsData
                 .select {(CartsData.product eq order.product.name) and (CartsData.user eq login) }
@@ -43,13 +45,16 @@ class ProductsDataBase private constructor(){
                     it[CartsData.price] = order.product.price
                 }
             }
+            response = CartResponse("ok")
         }else{
             transaction {
                 CartsData.update({(CartsData.product eq order.product.name) and (CartsData.user eq login)}) {
                     it[CartsData.amount] = order.amount + alreadyInsertedOrders[0].amount
                 }
             }
+            response = CartResponse("ok")
         }
+        return response
     }
 
     fun getOrdersForLogin(login: String) :List<Order>{
